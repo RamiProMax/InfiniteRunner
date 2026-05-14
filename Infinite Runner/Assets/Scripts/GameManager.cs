@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -11,11 +12,15 @@ public class GameManager : MonoBehaviour
     [Header("UI")]
     [SerializeField] private GameObject gameOverUI;
     [SerializeField] private TMP_Text scoreText;
-
     [SerializeField] private TMP_Text gameEndScoreText;
+    [SerializeField] private TMP_Text highScoreText;
+
+    private const string HIGH_SCORE_KEY = "HIGH_SCORE";
 
     public float ScrollSpeed { get; private set; }
     public float Distance { get; private set; }
+
+    public float HighScore { get; private set; }
 
     public bool IsGameOver { get; private set; }
 
@@ -31,13 +36,14 @@ public class GameManager : MonoBehaviour
 
         ScrollSpeed = config.startSpeed;
 
+        HighScore = PlayerPrefs.GetFloat(HIGH_SCORE_KEY, 0f);
+
         if (gameOverUI != null)
             gameOverUI.SetActive(false);
     }
 
     void Update()
     {
-        // Stop all movement/progression if game is over
         if (IsGameOver)
             return;
 
@@ -55,7 +61,7 @@ public class GameManager : MonoBehaviour
     {
         if (scoreText != null)
         {
-            scoreText.text = "Score: " + Mathf.FloorToInt(Distance).ToString();
+            scoreText.text = "Score: " + Mathf.FloorToInt(Distance);
         }
     }
 
@@ -66,9 +72,24 @@ public class GameManager : MonoBehaviour
 
         IsGameOver = true;
 
-        // Optional: freeze physics/time completely
-        gameEndScoreText.text = "Score: " +Mathf.FloorToInt(Distance).ToString();
         Time.timeScale = 0f;
+
+        float finalScore = Mathf.FloorToInt(Distance);
+
+        // Save high score
+        if (finalScore > HighScore)
+        {
+            HighScore = finalScore;
+            PlayerPrefs.SetFloat(HIGH_SCORE_KEY, HighScore);
+            PlayerPrefs.Save();
+        }
+
+        // Game over UI updates
+        if (gameEndScoreText != null)
+            gameEndScoreText.text = "Score: " + finalScore;
+
+        if (highScoreText != null)
+            highScoreText.text = "High Score: " + HighScore;
 
         if (gameOverUI != null)
             gameOverUI.SetActive(true);
@@ -78,8 +99,6 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 1f;
 
-        UnityEngine.SceneManagement.SceneManager.LoadScene(
-            UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex
-        );
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }
