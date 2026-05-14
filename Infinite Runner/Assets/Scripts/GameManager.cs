@@ -1,4 +1,5 @@
 using UnityEngine;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
@@ -9,6 +10,9 @@ public class GameManager : MonoBehaviour
 
     [Header("UI")]
     [SerializeField] private GameObject gameOverUI;
+    [SerializeField] private TMP_Text scoreText;
+
+    [SerializeField] private TMP_Text gameEndScoreText;
 
     public float ScrollSpeed { get; private set; }
     public float Distance { get; private set; }
@@ -43,6 +47,16 @@ public class GameManager : MonoBehaviour
         );
 
         Distance += ScrollSpeed * Time.deltaTime;
+
+        UpdateScoreUI();
+    }
+
+    private void UpdateScoreUI()
+    {
+        if (scoreText != null)
+        {
+            scoreText.text = "Score: " + Mathf.FloorToInt(Distance).ToString();
+        }
     }
 
     public void GameOver()
@@ -53,6 +67,7 @@ public class GameManager : MonoBehaviour
         IsGameOver = true;
 
         // Optional: freeze physics/time completely
+        gameEndScoreText.text = "Score: " +Mathf.FloorToInt(Distance).ToString();
         Time.timeScale = 0f;
 
         if (gameOverUI != null)
@@ -62,6 +77,7 @@ public class GameManager : MonoBehaviour
     public void RestartGame()
     {
         Time.timeScale = 1f;
+
         UnityEngine.SceneManagement.SceneManager.LoadScene(
             UnityEngine.SceneManagement.SceneManager.GetActiveScene().buildIndex
         );
