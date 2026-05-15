@@ -62,7 +62,7 @@ public class GameManager : MonoBehaviour
     {
         if (scoreText != null)
         {
-            scoreText.text = "Score: " + Mathf.FloorToInt(Distance);
+            scoreText.text = ": " + Mathf.FloorToInt(Distance);
         }
     }
 
