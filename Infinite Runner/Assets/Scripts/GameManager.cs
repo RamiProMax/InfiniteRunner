@@ -26,6 +26,7 @@ public class GameManager : MonoBehaviour
 
     void Awake()
     {
+        Time.timeScale = 1f;
         if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
@@ -94,6 +95,12 @@ public class GameManager : MonoBehaviour
         if (gameOverUI != null)
             gameOverUI.SetActive(true);
     }
+
+    public void GoToMainMenu()
+    {
+        SceneManager.LoadScene(1);
+    }
+
 
     public void RestartGame()
     {
